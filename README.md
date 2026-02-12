@@ -13,45 +13,60 @@ Each page refresh increments the counter value, which is stored in Redis.
 ## Architecture Overview
 The solution uses the following technologies:
 
-- **Application**: Python Flask
-- **Backend Store**: Redis
-- **Containerization**: Docker
-- **Orchestration**: Kubernetes (AWS EKS)
-- **Infrastructure as Code**: Terraform
-- **Cloud Provider**: AWS (ap-southeast-1)
-- **Public Access**: Kubernetes LoadBalancer (AWS ELB)
+- Application: Python Flask
+- Backend Store: Redis
+- Containerization: Docker
+- Orchestration: Kubernetes (AWS EKS)
+- Infrastructure as Code: Terraform
+- Cloud Provider: AWS (ap-southeast-1)
+- Public Access: Kubernetes LoadBalancer (AWS ELB)
 
 ---
+
 ### Architecture Flow
-1. User accesses the application via a public AWS LoadBalancer URL
-2. LoadBalancer routes traffic to EKS worker nodes
-3. Visitor App pods handle incoming requests
-4. Redis pod stores and updates the visitor count
-5. Terraform provisions and manages the AWS infrastructure
+1. User accesses the application via a public AWS LoadBalancer
+2. Traffic is routed to EKS worker nodes
+3. Visitor App pods process requests
+4. Redis pod stores and updates visitor count
+5. Terraform provisions and manages AWS infrastructure
 
 ---
 
-### CI/CD Flow Explanation
-1. Developer pushes code to the Git repository
-2. GitLab CI/CD pipeline is triggered automatically
-3. Docker image is built and pushed to Docker Hub
-4. Terraform provisions or updates AWS EKS infrastructure
-5. Kubernetes manifests are applied to deploy the application
-6. Application is exposed via AWS LoadBalancer
+## CI/CD Pipeline (Build → Test → Deploy)
 
----
+The CI/CD pipeline follows a simple and effective **Build → Test → Deploy** model using GitLab CI/CD.
 
-## Repository Structure
+### 1️.Build Stage
+- Triggered when code is pushed to the repository
+- Docker image for the Flask application is built
+- Image is tagged with commit SHA or version
+- Image is pushed to Docker Hub
+
+### 2️.Test Stage
+- Basic validation of Docker image
+- Ensures image builds successfully
+- Verifies application startup inside container
+
+### 3️. Deploy Stage
+- Terraform is used to provision or update AWS EKS infrastructure
+- Kubernetes manifests are applied using `kubectl`
+- Rolling updates ensure zero downtime
+- Application is exposed via AWS LoadBalancer
+
+### Why This CI/CD Design
+- Simple and easy to understand
+- Clear separation of responsibilities
+- Suitable for cloud-native and Kubernetes workloads
 govtech-cds-devops/
-├── app/ # Flask application & Dockerfile
+├── app/
 │ ├── app.py
 │ ├── Dockerfile
 │ └── requirements.txt
-├── k8s/ # Kubernetes manifests
+├── k8s/
 │ ├── app.yaml
 │ ├── service.yaml
 │ └── redis.yaml
-├── terraform/ # Terraform IaC for AWS EKS
+├── terraform/
 │ ├── main.tf
 │ ├── variables.tf
 │ └── outputs.tf
@@ -65,10 +80,9 @@ govtech-cds-devops/
 
 ## Application Details
 - Displays visitor count on the homepage
-- Redis is used to persist visitor count
+- Redis stores visitor count
 - Application listens on port `5000`
 - Multiple replicas are deployed for scalability
-
 
 Example output:
 
@@ -76,133 +90,79 @@ Visitor count: 3
 
 ---
 
-
 ## Prerequisites
 - AWS CLI configured
 - Terraform installed
 - Docker installed
 - kubectl installed
-- AWS IAM permissions to create EKS resources
+- AWS IAM permissions for EKS
 
 ---
+
 ## Infrastructure Provisioning (Terraform)
 
-Terraform provisions:
-- VPC and networking
-- EKS cluster
-- Managed node group
-- IAM roles and policies
 
-
-### Commands
 ```bash
 cd terraform
 terraform init
 terraform apply
+
+This provisions:
+
+VPC and networking
+
+EKS cluster
+
+Managed node group
+
+IAM roles and policies
+
 Kubernetes Deployment
-Deploy Redis
 kubectl apply -f k8s/redis.yaml
-Deploy Application
 kubectl apply -f k8s/app.yaml
 kubectl apply -f k8s/service.yaml
-Verify
+
+Verify:
+
 kubectl get pods
 kubectl get svc
 Public Access
-
-Retrieve the LoadBalancer URL:
-
 kubectl get svc visitor-service
 
-Access the application:
+Open in browser:
 
 http://<EXTERNAL-IP>
-
 Scalability
-
-Application runs with multiple replicas
 
 Stateless application design
 
-Redis used as shared backend
+Multiple replicas for high availability
+
+Redis as centralized datastore
 
 Kubernetes supports horizontal scaling
-
-CI/CD Pipeline Design (GitLab)
-
-The CI/CD pipeline is designed using GitLab CI/CD.
-
-Pipeline Stages
-
-Source
-
-Developer pushes code to GitLab repository
-
-Build
-
-Build Docker image
-
-Tag image with commit SHA
-
-Push image to Docker Hub
-
-Test
-
-Validate container build
-
-Run basic application checks
-
-Infrastructure Deployment
-
-Terraform init & plan
-
-Terraform apply (manual approval)
-
-Application Deployment
-
-Deploy Kubernetes manifests
-
-Rolling updates for zero downtime
-
-Post-Deployment Verification
-
-Validate pod health
-
-Confirm service accessibility
-
-Why GitLab CI/CD
-
-Native CI/CD integration
-
-Secure secrets management
-
-Strong Docker and Kubernetes support
-
-Well suited for Infrastructure as Code workflows
 
 AWS Best Practices Followed
 
 Infrastructure as Code using Terraform
 
-Managed Kubernetes service (EKS)
+Managed EKS cluster
 
 LoadBalancer for public access
 
-Stateless application design
-
-Separation of infrastructure and application layers
-
 Secure IAM-based access
+
+Separation of infra and application layers
 
 Cost-efficient and scalable architecture
 
 Troubleshooting Summary
 
-Resolved Docker image pull errors
+Fixed Docker image pull issues
 
 Corrected Kubernetes Service targetPort
 
-Fixed Redis connectivity by correcting Service selectors
+Resolved Redis connectivity by fixing Service selectors
 
 Debugged application errors using pod logs
 
@@ -213,3 +173,6 @@ terraform destroy
 
 Author
 Keerthi Grandhi
+
+
+
