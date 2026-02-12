@@ -53,10 +53,6 @@ The CI/CD pipeline follows a simple and effective **Build → Test → Deploy** 
 - Rolling updates ensure zero downtime
 - Application is exposed via AWS LoadBalancer
 
-### Why This CI/CD Design
-- Simple and easy to understand
-- Clear separation of responsibilities
-- Suitable for cloud-native and Kubernetes workloads
 govtech-cds-devops/
 ├── app/
 │ ├── app.py
