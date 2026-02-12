@@ -167,6 +167,10 @@ kubectl delete -f k8s/
 cd terraform
 terraform destroy
 
+## Diagrams
+Architecture and CI/CD pipeline diagrams are available in the 'diagrams/' directory of the repository
+Detailed deployment and execution screenshots are provided as a seperate document along with the submission
+
 Author
 Keerthi Grandhi
 
