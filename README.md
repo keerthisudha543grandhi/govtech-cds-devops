@@ -1,178 +1,110 @@
 # GovTech CDS DevOps Challenge – Visitor Counter Application
 
 ## Overview
-This project is an end-to-end DevOps implementation for the GovTech CDS (Citizen Disbursement System) challenge.
+This repository contains an end-to-end DevOps implementation for the GovTech CDS DevOps Challenge.  
+It demonstrates building, containerizing, deploying, and operating a visitor counter application on AWS using Kubernetes, Terraform, Docker, and CI/CD automation.
 
-It demonstrates how to design, deploy, and operate a scalable cloud-native application using AWS, Terraform, Docker, Kubernetes (EKS), and Redis.
-
-The application displays a visitor counter on a webpage.  
-Each page refresh increments the counter value, which is stored in Redis.
+The application displays a visitor count that increments on every page refresh. The counter value is stored in Redis.
 
 ---
 
-## Architecture Overview
-The solution uses the following technologies:
-
-- Application: Python Flask
-- Backend Store: Redis
-- Containerization: Docker
-- Orchestration: Kubernetes (AWS EKS)
-- Infrastructure as Code: Terraform
-- Cloud Provider: AWS (ap-southeast-1)
-- Public Access: Kubernetes LoadBalancer (AWS ELB)
+## Application Architecture
+- **Frontend / API**: Python Flask application
+- **Backend**: Redis (in-cluster)
+- **Containerization**: Docker
+- **Orchestration**: Kubernetes (AWS EKS)
+- **Infrastructure as Code**: Terraform
+- **CI/CD**: GitLab CI/CD
+- **Cloud Provider**: AWS
 
 ---
 
-### Architecture Flow
-1. User accesses the application via a public AWS LoadBalancer
-2. Traffic is routed to EKS worker nodes
-3. Visitor App pods process requests
-4. Redis pod stores and updates visitor count
-5. Terraform provisions and manages AWS infrastructure
+## Kubernetes Deployment
+- All application resources are deployed into a **dedicated Kubernetes namespace** (`visitor-app`)
+- Kubernetes manifests include:
+  - Namespace
+  - Deployment for visitor application
+  - Deployment and Service for Redis
+  - LoadBalancer Service for public access
+- Rolling updates are enabled with multiple replicas for high availability
 
 ---
 
-## CI/CD Pipeline (Build → Test → Deploy)
+## CI/CD Pipeline (GitLab CI/CD)
+The deployment is fully automated using GitLab CI/CD.
 
-The CI/CD pipeline follows a simple and effective **Build → Test → Deploy** model using GitLab CI/CD.
+### Pipeline Stages
+1. **Build**
+   - Build Docker image for the visitor application
+2. **Push**
+   - Push the Docker image to Docker Hub
+3. **Deploy**
+   - Apply Kubernetes manifests to the EKS cluster using `kubectl`
 
-### 1️.Build Stage
-- Triggered when code is pushed to the repository
-- Docker image for the Flask application is built
-- Image is tagged with commit SHA or version
-- Image is pushed to Docker Hub
+### CI/CD Features
+- Secure pipeline variables for:
+  - Docker Hub credentials
+  - AWS credentials
+  - Kubernetes kubeconfig (base64-encoded)
+- Fully automated build and deployment
+- No manual kubectl or docker commands required after pipeline execution
 
-### 2️.Test Stage
-- Basic validation of Docker image
-- Ensures image builds successfully
-- Verifies application startup inside container
+---
 
-### 3️. Deploy Stage
-- Terraform is used to provision or update AWS EKS infrastructure
-- Kubernetes manifests are applied using `kubectl`
-- Rolling updates ensure zero downtime
-- Application is exposed via AWS LoadBalancer
+## Terraform Infrastructure
+Terraform is used to provision AWS infrastructure required for Kubernetes deployment.
 
-govtech-cds-devops/
-├── app/
-│ ├── app.py
+### Current Scope
+- EKS cluster provisioning
+- Networking and base AWS resources
+
+### Notes on Terraform Enhancements
+The following enhancements are acknowledged and can be added as future improvements:
+- Managed or self-managed EKS Node Groups
+- Explicit IAM roles and policies for EKS and worker nodes
+- Fine-grained security group rules
+- Remote Terraform backend (S3 with DynamoDB state locking)
+
+The current setup focuses on functional EKS provisioning and CI/CD-driven deployment as per challenge requirements.
+
+---
+
+## Repository Structure
+├── app/ # Flask application source code
 │ ├── Dockerfile
+│ ├── app.py
 │ └── requirements.txt
-├── k8s/
-│ ├── app.yaml
-│ ├── service.yaml
-│ └── redis.yaml
-├── terraform/
+├── k8s/ # Kubernetes manifests
+│ ├── namespace.yml
+│ ├── deployment.yml
+│ ├── redis.yml
+│ └── service.yml
+├── terraform/ # Terraform infrastructure code
 │ ├── main.tf
 │ ├── variables.tf
 │ └── outputs.tf
-├── diagrams/
-│ ├── architecture.png
-│ └── cicd-pipeline.png
-├── .gitignore
+├── .gitlab-ci.yml # GitLab CI/CD pipeline definition
 └── README.md
 
 ---
 
-## Application Details
-- Displays visitor count on the homepage
-- Redis stores visitor count
-- Application listens on port `5000`
-- Multiple replicas are deployed for scalability
-
-Example output:
-
-Visitor count: 3
+## Verification
+After a successful pipeline execution:
+- Application is accessible via AWS LoadBalancer URL
+- Visitor counter increments correctly on page refresh
+- Redis stores and persists counter values
+- Kubernetes pods are healthy and running in the `visitor-app` namespace
 
 ---
 
-## Prerequisites
-- AWS CLI configured
-- Terraform installed
-- Docker installed
-- kubectl installed
-- AWS IAM permissions for EKS
+## Submission Notes
+- CI/CD pipeline execution screenshots are included as proof
+- Kubernetes namespace usage is implemented
+- Docker build, push, and deploy are automated
+- Sensitive credentials are securely masked in CI/CD variables
 
 ---
 
-## Infrastructure Provisioning (Terraform)
-
-
-```bash
-cd terraform
-terraform init
-terraform apply
-
-This provisions:
-
-VPC and networking
-
-EKS cluster
-
-Managed node group
-
-IAM roles and policies
-
-Kubernetes Deployment
-kubectl apply -f k8s/redis.yaml
-kubectl apply -f k8s/app.yaml
-kubectl apply -f k8s/service.yaml
-
-Verify:
-
-kubectl get pods
-kubectl get svc
-Public Access
-kubectl get svc visitor-service
-
-Open in browser:
-
-http://<EXTERNAL-IP>
-Scalability
-
-Stateless application design
-
-Multiple replicas for high availability
-
-Redis as centralized datastore
-
-Kubernetes supports horizontal scaling
-
-AWS Best Practices Followed
-
-Infrastructure as Code using Terraform
-
-Managed EKS cluster
-
-LoadBalancer for public access
-
-Secure IAM-based access
-
-Separation of infra and application layers
-
-Cost-efficient and scalable architecture
-
-Troubleshooting Summary
-
-Fixed Docker image pull issues
-
-Corrected Kubernetes Service targetPort
-
-Resolved Redis connectivity by fixing Service selectors
-
-Debugged application errors using pod logs
-
-Cleanup
-kubectl delete -f k8s/
-cd terraform
-terraform destroy
-
-## Diagrams
-Architecture and CI/CD pipeline diagrams are available in the 'diagrams/' directory of the repository
-Detailed deployment and execution screenshots are provided as a seperate document along with the submission
-
-Author
-Keerthi Grandhi
-
-
+## Conclusion
+This project demonstrates a complete DevOps workflow including infrastructure provisioning, containerization, Kubernetes deployment, and CI/CD automation, aligned with GovTech CDS DevOps Challenge requirements.
 
