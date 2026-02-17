@@ -52,7 +52,7 @@ Internal service discovery using Kubernetes DNS
 
 External access via AWS LoadBalancer (ELB)
 
-CI/CD Pipeline (GitLab CI/CD)
+**CI/CD Pipeline (GitLab CI/CD)**
 
 The application build and deployment are fully automated using GitLab CI/CD.
 
@@ -87,7 +87,7 @@ No manual Docker or kubectl commands required after pipeline execution
 
 Pipeline execution history maintained in GitLab
 
-Terraform Infrastructure
+**Terraform Infrastructure**
 
 Terraform is used to provision the AWS infrastructure required for Kubernetes deployment.
 
@@ -111,7 +111,7 @@ Ensures centralized and consistent state management
 
 Suitable for CI/CD-based Terraform execution
 
-Terraform Enhancements Implemented
+**Terraform Enhancements Implemented**
 
 The following enhancements have been implemented as part of this solution:
 
@@ -125,7 +125,7 @@ The following enhancements have been implemented as part of this solution:
 
 These additions improve security, scalability, and production readiness of the infrastructure.
 
-Repository Structure
+**Repository Structure**
 ├── app/                     # Flask application source code
 │   ├── Dockerfile
 │   ├── app.py
@@ -149,7 +149,7 @@ Repository Structure
 ├── .gitlab-ci.yml            # GitLab CI/CD pipeline definition
 └── README.md
 
-Verification
+**Verification**
 
 After a successful pipeline execution:
 
@@ -163,7 +163,7 @@ Kubernetes pods are healthy and running in the visitor-app namespace
 
 CI/CD pipeline completes successfully without manual intervention
 
-Submission Notes
+**Submission Notes**
 
 CI/CD pipeline execution screenshots are included as proof
 
@@ -191,5 +191,6 @@ Best practices such as namespace isolation, managed node groups, and remote stat
 
 The solution aligns with GovTech CDS DevOps Challenge requirements and follows industry-standard DevOps practices.
 
-Author 
+**Author **
+
 Grandhi keerthisudha
