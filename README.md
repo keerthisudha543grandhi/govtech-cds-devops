@@ -1,4 +1,4 @@
-GovTech CDS DevOps Challenge – Visitor Counter Application
+**GovTech CDS DevOps Challenge – Visitor Counter Application**
 Overview
 
 This repository contains an end-to-end DevOps implementation for the GovTech CDS DevOps Challenge.
@@ -55,7 +55,7 @@ CI/CD Pipeline (GitLab CI/CD)
 
 The application build and deployment are fully automated using GitLab CI/CD.
 
-Pipeline Stages
+**Pipeline Stages**
 1. Build
 
 Build Docker image for the visitor application
@@ -70,7 +70,7 @@ Configure Kubernetes access using kubeconfig
 
 Apply Kubernetes manifests to the EKS cluster using kubectl
 
-CI/CD Features
+**CI/CD Features**
 
 Secure CI/CD variables for:
 
@@ -174,7 +174,7 @@ Terraform remote backend (S3) is configured
 
 Sensitive credentials are securely masked in CI/CD variables
 
-Conclusion
+**Conclusion**
 
 This project demonstrates a complete DevOps workflow, including:
 
